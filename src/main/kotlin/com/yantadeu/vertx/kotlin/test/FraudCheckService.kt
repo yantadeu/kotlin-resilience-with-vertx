@@ -18,39 +18,6 @@ class FraudCheckService(
     private val client: WebClient = WebClient.create(vertx)
     private val handlerFactory = CoroutineHandlerFactory(vertx.dispatcher())
 
-    fun checkFraudFuture(): Unit {
-        circuitBreaker.execute(
-            Handler<Promise<String>> {
-                println("Requesting checkFraudFuture...")
-                it.complete("Success")
-            },
-            Handler {
-                println(it)
-            }
-        )
-    }
-
-    suspend fun checkFraudBasic(): Any {
-        val response = circuitBreaker.execute(
-            handlerFactory.create {
-                "Success"
-            }
-        )
-        return response
-    }
-
-    suspend fun checkFraudCoroutine(): Any {
-        val response =  circuitBreaker.execute(
-            handlerFactory.create {
-                println("Requesting checkFraudCoroutine...")
-                val response = client.getAbs("https://wttr.in").send()
-                response.await().bodyAsString()
-            }
-        )
-        return response
-    }
-
-
     suspend fun checkFraud(): Boolean {
         val response = circuitBreaker.execute(
             handlerFactory.create(
