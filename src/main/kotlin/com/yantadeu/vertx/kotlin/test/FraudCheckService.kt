@@ -22,7 +22,7 @@ class FraudCheckService(
         circuitBreaker.execute(
             Handler<Promise<String>> {
                 println("Requesting checkFraudFuture...")
-                it.complete("OK")
+                it.complete("Success")
             },
             Handler {
                 println(it)
@@ -33,7 +33,7 @@ class FraudCheckService(
     suspend fun checkFraudBasic(): Any {
         val response = circuitBreaker.execute(
             handlerFactory.create {
-                "OK"
+                "Success"
             }
         )
         return response

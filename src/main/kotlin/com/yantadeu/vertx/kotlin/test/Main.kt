@@ -21,14 +21,14 @@ object Main {
             { ctx -> ctx.response().setStatusCode(200).end("false") }
         )
         val server = FraudCheckApi(vertx, responses)
-        server.start()
+        val port = server.start()
 
         val options = circuitBreakerOptionsOf(
             maxRetries = 1
         )
 
         val circuitBreaker = CircuitBreaker.create(UUID.randomUUID().toString(), vertx, options)
-        val client = FraudCheckService(vertx, circuitBreaker, "http://localhost:8090")
+        val client = FraudCheckService(vertx, circuitBreaker, "http://localhost:${port}")
 
         tryOrPrint { client.checkFraud() }
     }
@@ -39,7 +39,7 @@ object Main {
             { ctx -> ctx.response().setStatusCode(500).end() }
         )
         val server = FraudCheckApi(vertx, responses)
-        val serverPort = server.start()
+        val port = server.start()
 
         val options = circuitBreakerOptionsOf(
             maxRetries = 1,
@@ -47,7 +47,7 @@ object Main {
         )
 
         val circuitBreaker = CircuitBreaker.create(UUID.randomUUID().toString(), vertx, options)
-        val client = FraudCheckService(vertx, circuitBreaker, "http://localhost:8090")
+        val client = FraudCheckService(vertx, circuitBreaker, "http://localhost:${port}")
 
         tryOrPrint { client.checkFraudWithFallback(50) }
     }
@@ -58,7 +58,7 @@ object Main {
             { ctx -> ctx.response().setStatusCode(200).end("true") }
         )
         val server = FraudCheckApi(vertx, responses)
-        val serverPort = server.start()
+        val port = server.start()
 
         val options = circuitBreakerOptionsOf(
             resetTimeout = 5000,
@@ -66,7 +66,7 @@ object Main {
         )
 
         val circuitBreaker = CircuitBreaker.create(UUID.randomUUID().toString(), vertx, options)
-        val client = FraudCheckService(vertx, circuitBreaker, "http://localhost:8090")
+        val client = FraudCheckService(vertx, circuitBreaker, "http://localhost:${port}")
 
         tryOrPrint { client.checkFraud() }
         tryOrPrint { client.checkFraud() }
@@ -82,7 +82,7 @@ object Main {
             { ctx -> ctx.response().setStatusCode(200).end("true") }
         )
         val server = FraudCheckApi(vertx, responses)
-        val serverPort = server.start()
+        val port = server.start()
 
         val options = circuitBreakerOptionsOf(
             fallbackOnFailure = false,
@@ -93,7 +93,7 @@ object Main {
         )
 
         val circuitBreaker = CircuitBreaker.create("kotlin-circuit-breaker", vertx, options)
-        val client = FraudCheckService(vertx, circuitBreaker, "http://localhost:8090")
+        val client = FraudCheckService(vertx, circuitBreaker, "http://localhost:${port}")
 
         tryOrPrint { client.checkFraud() }
         tryOrPrint { client.checkFraud() }
